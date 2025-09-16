@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard - Security Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Security Demo</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/users">Users</a>
+                <span class="navbar-text me-3">Welcome, [[${username}]]!</span>
+                <form method="post" action="/logout" class="d-inline">
+                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Dashboard</h2>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header"><strong>Your JWT Token</strong></div>
+                    <div class="card-body">
+                        <textarea class="form-control" rows="4" readonly th:text="${token}"></textarea>
+                        <small class="text-muted">Use this token for API requests with Authorization: Bearer header</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header"><strong>Your Details</strong></div>
+                    <div class="card-body">
+                        <p><strong>Username:</strong> [[${username}]]</p>
+                        <p><strong>Role:</strong> <span class="badge bg-primary">[[${role}]]</span></p>
+                        <p><strong>Authorities:</strong> 
+                            <span th:each="auth : ${authorities}" class="badge bg-secondary me-1">[[${auth.authority}]]</span>
+                        </p>
+                        <div th:if="${oauthProvider}">
+                            <p><strong>OAuth2 Provider:</strong> <span class="badge bg-info">[[${oauthProvider}]]</span></p>
+                            <p th:if="${email}"><strong>Email:</strong> [[${email}]]</p>
+                            <p th:if="${avatarUrl}"><strong>Avatar:</strong> <img th:src="${avatarUrl}" class="rounded-circle" width="32" height="32"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header"><strong>API Testing</strong></div>
+                    <div class="card-body">
+                        <h6>Test API Endpoints:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Basic Auth Examples:</h6>
+                                <code>curl -u [[${username}]]:password http://localhost:8081/api/basic/user</code><br>
+                                <code>curl -u admin:admin http://localhost:8081/api/basic/admin</code>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-success">JWT Examples:</h6>
+                                <code>curl -H "Authorization: Bearer &lt;token&gt;" http://localhost:8081/api/jwt/user/profile</code><br>
+                                <code>curl -H "Authorization: Bearer &lt;token&gt;" http://localhost:8081/api/jwt/admin/dashboard</code>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h6 class="text-warning">API Key Examples:</h6>
+                                <code>curl -H "X-API-Key: admin-key-123" http://localhost:8081/api/key/data</code><br>
+                                <code>curl -H "X-API-Key: user-key-456" http://localhost:8081/api/key/data</code>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-info">Role-Based Examples:</h6>
+                                <code>curl -u [[${username}]]:password http://localhost:8081/api/role/user/info</code><br>
+                                <code>curl -u admin:admin http://localhost:8081/api/role/admin/settings</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
