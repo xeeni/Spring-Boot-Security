@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring Boot Security Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">🔐 Security Demo</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/login">Login</a>
+                <a class="nav-link" href="/register">Register</a>
+                <a class="nav-link" href="/h2-console" target="_blank">H2 Console</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">🔐 Spring Boot Security Demo</h3>
+                        <small>Complete API Security Implementation</small>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${authenticated}" class="alert alert-success">
+                            <strong>Welcome back, [[${username}]]!</strong>
+                            <span class="badge bg-primary ms-2" th:each="auth : ${authorities}">[[${auth.authority}]]</span>
+                        </div>
+                        
+                        <h5>🛡️ Authentication Methods Implemented:</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">✅ JWT Authentication</li>
+                                    <li class="list-group-item">✅ Basic Authentication</li>
+                                    <li class="list-group-item">✅ API Key Authentication</li>
+                                    <li class="list-group-item">✅ OAuth2 (GitHub/Google)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">✅ Role-Based Access Control</li>
+                                    <li class="list-group-item">✅ Method-Level Security</li>
+                                    <li class="list-group-item">✅ Rate Limiting</li>
+                                    <li class="list-group-item">✅ Session Management</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <hr>
+                        
+                        <h5>🚀 Quick Actions:</h5>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                            <a href="/login" class="btn btn-primary">🔑 Login</a>
+                            <a href="/register" class="btn btn-success">📝 Register</a>
+                            <a href="/api/public/info" class="btn btn-info" target="_blank">🌐 Test Public API</a>
+                            <a href="/h2-console" class="btn btn-warning" target="_blank">🗄️ H2 Console</a>
+                        </div>
+
+                        <hr>
+
+                        <h5>📚 API Endpoints:</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Public Endpoints:</h6>
+                                <small>
+                                    <code>GET /api/public/info</code><br>
+                                    <code>POST /api/auth/login</code><br>
+                                    <code>POST /api/auth/register</code><br>
+                                    <code>GET /api/rate-limit/public</code>
+                                </small>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-success">Protected Endpoints:</h6>
+                                <small>
+                                    <code>GET /api/jwt/user/profile</code><br>
+                                    <code>GET /api/basic/admin</code><br>
+                                    <code>GET /api/key/data</code><br>
+                                    <code>GET /api/oauth2/user</code>
+                                </small>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <h5>👥 Default Users:</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Password</th>
+                                        <th>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>admin</code></td>
+                                        <td><code>admin</code></td>
+                                        <td><span class="badge bg-danger">ADMIN</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>user</code></td>
+                                        <td><code>password</code></td>
+                                        <td><span class="badge bg-primary">USER</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>john</code></td>
+                                        <td><code>john123</code></td>
+                                        <td><span class="badge bg-primary">USER</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>jane</code></td>
+                                        <td><code>jane123</code></td>
+                                        <td><span class="badge bg-danger">ADMIN</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Spring Security Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="/oauth2/authorization/github" class="btn btn-dark">
+                                Login with GitHub
+                            </a>
+                            <a href="/oauth2/authorization/google" class="btn btn-danger">
+                                Login with Google
+                            </a>
+                        </div>
+                        <hr>
+                        <p class="text-muted">
+                            Note: OAuth2 providers need to be configured with valid client credentials.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
