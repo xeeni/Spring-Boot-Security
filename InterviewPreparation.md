@@ -730,4 +730,205 @@ public void handleAuthenticationFailure(AbstractAuthenticationFailureEvent event
 - Use security scanning tools
 - Implement proper logging and monitoring
 
+---
+
+## Architecture & Design Patterns
+
+### Q31: How do you structure a Spring Security project?
+**A:** Follow layered architecture:
+```
+com.example.security/
+├── config/          # Security configurations
+├── controller/      # REST endpoints
+├── service/         # Business logic
+├── repository/      # Data access
+├── model/          # Entities
+├── filter/         # Custom security filters
+└── util/           # Utilities (JWT, etc.)
+```
+
+### Q32: What's the role of @ComponentScan in security?
+**A:**
+```java
+@SpringBootApplication
+@ComponentScan(basePackages = "com.example.security")
+public class SecurityApplication {
+    // Ensures all security components are discovered
+}
+```
+
+### Q33: How do you handle multiple authentication providers?
+**A:**
+```java
+@Configuration
+public class MultiAuthConfig {
+    
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+            .userDetailsService(customUserDetailsService)
+            .passwordEncoder(passwordEncoder())
+            .and()
+            .ldapAuthentication()
+            .userDnPatterns("uid={0},ou=people")
+            .and()
+            .build();
+    }
+}
+```
+
+---
+
+## Real-world Scenarios
+
+### Q34: How do you implement API versioning with security?
+**A:**
+```java
+.authorizeHttpRequests(auth -> auth
+    .requestMatchers("/api/v1/public/**").permitAll()
+    .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+    .requestMatchers("/api/v2/**").hasRole("USER")
+    .anyRequest().authenticated())
+```
+
+### Q35: How do you handle CORS with Spring Security?
+**A:**
+```java
+@Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+    configuration.setAllowedHeaders(Arrays.asList("*"));
+    configuration.setAllowCredentials(true);
+    
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+}
+```
+
+### Q36: How do you implement graceful degradation?
+**A:**
+```java
+@Service
+public class GracefulSecurityService {
+    
+    public boolean authenticateWithFallback(String token) {
+        try {
+            return primaryAuthService.validate(token);
+        } catch (Exception e) {
+            log.warn("Primary auth failed, using fallback");
+            return fallbackAuthService.validate(token);
+        }
+    }
+}
+```
+
+---
+
+## Production Considerations
+
+### Q37: How do you configure security for different environments?
+**A:**
+```properties
+# application-dev.properties
+logging.level.org.springframework.security=DEBUG
+rate-limit.enabled=false
+
+# application-prod.properties
+logging.level.org.springframework.security=WARN
+rate-limit.enabled=true
+rate-limit.max-requests=100
+```
+
+### Q38: How do you implement health checks for security?
+**A:**
+```java
+@Component
+public class SecurityHealthIndicator implements HealthIndicator {
+    
+    @Override
+    public Health health() {
+        try {
+            // Check JWT service
+            jwtUtil.generateToken("health-check", "USER");
+            
+            // Check rate limiting
+            rateLimitService.isAllowed("health-check");
+            
+            return Health.up()
+                .withDetail("jwt", "operational")
+                .withDetail("rate-limiting", "operational")
+                .build();
+        } catch (Exception e) {
+            return Health.down()
+                .withDetail("error", e.getMessage())
+                .build();
+        }
+    }
+}
+```
+
+### Q39: How do you implement security metrics?
+**A:**
+```java
+@Component
+public class SecurityMetrics {
+    
+    private final Counter authSuccessCounter = Counter.builder("auth.success")
+        .description("Successful authentications")
+        .register(Metrics.globalRegistry);
+    
+    private final Counter authFailureCounter = Counter.builder("auth.failure")
+        .description("Failed authentications")
+        .register(Metrics.globalRegistry);
+    
+    @EventListener
+    public void onAuthSuccess(AuthenticationSuccessEvent event) {
+        authSuccessCounter.increment();
+    }
+    
+    @EventListener
+    public void onAuthFailure(AbstractAuthenticationFailureEvent event) {
+        authFailureCounter.increment();
+    }
+}
+```
+
+---
+
+## Troubleshooting Common Issues
+
+### Q40: How do you debug Spring Security issues?
+**A:**
+1. **Enable debug logging:**
+```properties
+logging.level.org.springframework.security=DEBUG
+```
+
+2. **Check filter chain order:**
+```java
+@Bean
+public FilterRegistrationBean<CustomFilter> customFilterRegistration() {
+    FilterRegistrationBean<CustomFilter> registration = new FilterRegistrationBean<>();
+    registration.setFilter(new CustomFilter());
+    registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+    return registration;
+}
+```
+
+3. **Debug authentication:**
+```java
+@GetMapping("/debug/auth")
+public ResponseEntity<?> debugAuth(Authentication auth, HttpServletRequest request) {
+    return ResponseEntity.ok(Map.of(
+        "authenticated", auth != null,
+        "principal", auth != null ? auth.getPrincipal() : "none",
+        "authorities", auth != null ? auth.getAuthorities() : "none",
+        "headers", Collections.list(request.getHeaderNames())
+    ));
+}
+```
+
 This comprehensive guide covers all major Spring Boot Security concepts with practical examples and real-world scenarios you'll encounter in interviews.
